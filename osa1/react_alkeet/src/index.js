@@ -10,7 +10,7 @@ const Otsikko = (props) => {
 }
 
 const Sisalto = (props) => {
-  const table = props.osat
+  const table = props.kurssin_osat
   console.log(table);
   const parts = []
   table.forEach((subpart) => {
@@ -28,35 +28,42 @@ const Osa = (props) => {
 }
 
 const Yhteensa = (props) => {
+  const table = props.kurssin_osat
+  let yht = 0
+  table.forEach((subpart) => {
+    yht += subpart.tehtavia
+  })
   return (
     <div>
-      <p>yhteensä {props.all_exercises} tehtävää</p>
+      <p>yhteensä {yht} tehtävää</p>
     </div>
   )
 }
 
 const App = () => {
-  const kurssi = 'Half Stack -sovelluskehitys'
-  const osat = [
-    {
-      nimi: 'Reactin perusteet',
-      tehtavia: 10
-    },
-    {
-      nimi: 'Tiedonvälitys propseilla',
-      tehtavia: 7
-    },
-    {
-      nimi: 'Komponenttien tila',
-      tehtavia: 14
-    }
-  ]
+  const kurssi = {
+    nimi: 'Half Stack -sovelluskehitys',
+    osat: [
+      {
+        nimi: 'Reactin perusteet',
+        tehtavia: 10
+      },
+      {
+        nimi: 'Tiedonvälitys propseilla',
+        tehtavia: 7
+      },
+      {
+        nimi: 'Komponenttien tila',
+        tehtavia: 14
+      }
+    ]
+  }
 
   return (
     <div>
-      <Otsikko course={kurssi} />
-      <Sisalto osat={osat} />
-      <Yhteensa osat={osat} />
+      <Otsikko course={kurssi.nimi} />
+      <Sisalto kurssin_osat={kurssi.osat} />
+      <Yhteensa kurssin_osat={kurssi.osat} />
     </div>
   )
 }
