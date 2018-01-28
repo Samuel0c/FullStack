@@ -10,11 +10,16 @@ const Header = (props) => {
 }
 
 const Rating = (props) => {
-  return (
-    <div>
-      <p>{props.text} {props.how_many}</p>
-    </div>
-  )
+  if (props.state.number_of_feedback > 0) {
+    return (
+      <div>
+        <p>{props.text} {props.how_many}</p>
+        </div>
+      )
+   }
+   return (
+     <div></div>
+   )
 }
 
 const Button = ({ handleClick, text }) => (
@@ -22,6 +27,35 @@ const Button = ({ handleClick, text }) => (
     {text}
   </button>
 )
+
+const Statistics = (props) => {
+  const average = 'keskiarvo'
+  const positives = 'positiivisia'
+  if (props.state.number_of_feedback === 0) {
+    return (
+      <div>
+        <p>palautetta ei ole vielä annettu</p>
+      </div>
+    )
+  }
+  return (
+    <div>
+      <Statistic text={average} total={props.state.sum_of_feedback} divider={props.state.number_of_feedback} />
+      <Statistic text={positives} total={props.state.number_of_positives} divider={props.state.number_of_feedback} />
+    </div>
+  )
+}
+
+const Statistic = (props) => {
+  const total = props.total
+  const divider = props.divider
+  const quotient = total/divider
+  return (
+    <div>
+      <p> {props.text} {quotient} </p>
+    </div>
+  )
+}
 
 
 class App extends React.Component {
@@ -36,7 +70,10 @@ class App extends React.Component {
     this.state = {
       good_ratings: 0,
       neutral_ratings: 0,
-      bad_ratings: 0
+      bad_ratings: 0,
+      number_of_feedback: 0,
+      sum_of_feedback: 0,
+      number_of_positives: 0
     }
   }
 
@@ -44,17 +81,35 @@ class App extends React.Component {
     this.setState({
       good_ratings: this.state.good_ratings + 1
     })
+    this.setState({
+      number_of_feedback: this.state.number_of_feedback + 1
+    })
+    this.setState({
+      sum_of_feedback: this.state.sum_of_feedback + 1
+    })
+    this.setState({
+      number_of_positives: this.state.number_of_positives + 1
+    })
   }
 
   clickNeutral = () => {
     this.setState({
       neutral_ratings: this.state.neutral_ratings + 1
     })
+    this.setState({
+      number_of_feedback: this.state.number_of_feedback + 1
+    })
   }
 
   clickBad = () => {
     this.setState({
       bad_ratings: this.state.bad_ratings + 1
+    })
+    this.setState({
+      number_of_feedback: this.state.number_of_feedback + 1
+    })
+    this.setState({
+      sum_of_feedback: this.state.sum_of_feedback - 1
     })
   }
 
@@ -75,9 +130,10 @@ class App extends React.Component {
           text={this.bad}
         />
         <Header text={this.statsHeader} />
-        <Rating text={this.good} how_many={this.state.good_ratings} />
-        <Rating text={this.neutral} how_many={this.state.neutral_ratings} />
-        <Rating text={this.bad} how_many={this.state.bad_ratings} />
+        <Rating state={this.state} text={this.good} how_many={this.state.good_ratings} />
+        <Rating state={this.state} text={this.neutral} how_many={this.state.neutral_ratings} />
+        <Rating state={this.state} text={this.bad} how_many={this.state.bad_ratings} />
+        <Statistics state={this.state} />
       </div>
     )
   }
