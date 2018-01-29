@@ -9,28 +9,8 @@ const Header = (props) => {
   )
 }
 
-const Rating = (props) => {
-  if (props.state.number_of_feedback > 0) {
-    return (
-      <div>
-        <p>{props.text} {props.how_many}</p>
-        </div>
-      )
-   }
-   return (
-     <div></div>
-   )
-}
 
-const Button = ({ handleClick, text }) => (
-  <button onClick={handleClick}>
-    {text}
-  </button>
-)
-
-const Statistics = (props) => {
-  const average = 'keskiarvo'
-  const positives = 'positiivisia'
+const Table = (props) => {
   if (props.state.number_of_feedback === 0) {
     return (
       <div>
@@ -39,10 +19,46 @@ const Statistics = (props) => {
     )
   }
   return (
-    <div>
+    <table>
+      <tbody>
+        <Rating state={props.state} text={props.good} how_many={props.state.good_ratings} />
+        <Rating state={props.state} text={props.neutral} how_many={props.state.neutral_ratings} />
+        <Rating state={props.state} text={props.bad} how_many={props.state.bad_ratings} />
+      </tbody>
+        <Statistics state={props.state} />
+    </table>
+
+  )
+}
+
+const Button = ({ handleClick, text }) => (
+  <button onClick={handleClick}>
+    {text}
+  </button>
+)
+
+const Rating = (props) => {
+  if (props.state.number_of_feedback > 0) {
+    return (
+      <tr>
+        <td>{props.text}</td>
+        <td>{props.how_many}</td>
+      </tr>
+      )
+   }
+   return (
+     <tr></tr>
+   )
+}
+
+const Statistics = (props) => {
+  const average = 'keskiarvo'
+  const positives = 'positiivisia'
+  return (
+    <tbody>
       <Statistic text={average} total={props.state.sum_of_feedback} divider={props.state.number_of_feedback} />
       <Statistic text={positives} total={props.state.number_of_positives} divider={props.state.number_of_feedback} />
-    </div>
+    </tbody>
   )
 }
 
@@ -51,9 +67,10 @@ const Statistic = (props) => {
   const divider = props.divider
   const quotient = total/divider
   return (
-    <div>
-      <p> {props.text} {quotient} </p>
-    </div>
+    <tr>
+      <td>{props.text}</td>
+      <td>{quotient}</td>
+    </tr>
   )
 }
 
@@ -130,10 +147,7 @@ class App extends React.Component {
           text={this.bad}
         />
         <Header text={this.statsHeader} />
-        <Rating state={this.state} text={this.good} how_many={this.state.good_ratings} />
-        <Rating state={this.state} text={this.neutral} how_many={this.state.neutral_ratings} />
-        <Rating state={this.state} text={this.bad} how_many={this.state.bad_ratings} />
-        <Statistics state={this.state} />
+        <Table state={this.state} good={this.good} neutral={this.neutral} bad={this.bad} />
       </div>
     )
   }
