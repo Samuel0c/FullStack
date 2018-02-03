@@ -19,7 +19,10 @@ class App extends React.Component {
       name: this.state.newName
     }
 
-    const persons = this.state.persons.concat(nameObject)
+    let persons = this.state.persons
+
+    if (!persons.find(p => p.name === nameObject.name))
+      persons = this.state.persons.concat(nameObject)
 
     this.setState({
       persons,
@@ -28,7 +31,6 @@ class App extends React.Component {
   }
 
   handleNameChange = (event) => {
-    console.log(event.target.value)
     this.setState({ newName: event.target.value })
   }
 
