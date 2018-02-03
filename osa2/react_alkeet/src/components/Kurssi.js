@@ -40,7 +40,6 @@ const Yhteensa = (props) => {
   const tasks = props.kurssin_osat.reduce((acc, cur) => {
     return acc + cur.tehtavia
   }, 0)
-
   return (
     <div>
       <p>yhteensä {tasks} tehtävää</p>
