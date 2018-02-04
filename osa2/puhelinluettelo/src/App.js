@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios'
 import Person from './components/Person'
 import Valiotsikko from './components/Valiotsikko'
 import Button from './components/Button'
@@ -7,16 +8,21 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      persons: [
-        { name: 'Arto Hellas', number: '040-123456' },
-        { name: 'Martti Tienari', number: '040-123456' },
-        { name: 'Arto Järvinen', number: '040-123456' },
-        { name: 'Lea Kutvonen', number: '040-123456' }
-      ],
+      persons: [],
       newName: '',
       newNumber: '',
       filter: ''
     }
+  }
+
+  componentDidMount() {
+    console.log('will mount')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        this.setState({ persons: response.data })
+      })
   }
 
   addPerson = (event) => {
@@ -52,6 +58,7 @@ class App extends React.Component {
 
 
   render() {
+   console.log('render')
    console.log(this.state.filter);
    const filter = this.state.filter
     const personsToShow =
