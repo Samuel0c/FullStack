@@ -16,11 +16,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log('will mount')
     axios
       .get('http://localhost:3001/persons')
       .then(response => {
-        console.log('promise fulfilled')
         this.setState({ persons: response.data })
       })
   }
@@ -34,14 +32,23 @@ class App extends React.Component {
 
     let persons = this.state.persons
 
-    if (!persons.find(p => p.name === personObject.name))
-      persons = this.state.persons.concat(personObject)
-
-    this.setState({
-      persons,
-      newName: '',
-      newNumber: ''
+    axios.post('http://localhost:3001/persons', personObject)
+    .then(response => {
+      if (!persons.find(p => p.name === personObject.name)) {
+        this.setState({
+          persons: this.state.persons.concat(response.data),
+          newName: '',
+          newNumber: ''
+        })
+      } else {
+        this.setState({
+          persons,
+          newName: '',
+          newNumber: ''
+        })
+      }
     })
+
   }
 
   handleNameChange = (event) => {
@@ -58,7 +65,6 @@ class App extends React.Component {
 
 
   render() {
-   console.log('render')
    console.log(this.state.filter);
    const filter = this.state.filter
     const personsToShow =
