@@ -3,6 +3,7 @@ import axios from 'axios'
 import Person from './components/Person'
 import Valiotsikko from './components/Valiotsikko'
 import Button from './components/Button'
+import personService from './services/persons'
 
 class App extends React.Component {
   constructor(props) {
@@ -16,11 +17,11 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        this.setState({ persons: response.data })
-      })
+    personService
+    .getAll()
+    .then(response => {
+      this.setState({persons: response.data})
+    })
   }
 
   addPerson = (event) => {
@@ -32,7 +33,8 @@ class App extends React.Component {
 
     let persons = this.state.persons
 
-    axios.post('http://localhost:3001/persons', personObject)
+    personService
+    .create(personObject)
     .then(response => {
       if (!persons.find(p => p.name === personObject.name)) {
         this.setState({
