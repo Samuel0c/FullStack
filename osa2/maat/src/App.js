@@ -38,7 +38,12 @@ class App extends React.Component {
     } else if (!countriesToShow.length) {
       return <p>'Could not find any countries that match the filter'</p>
     } else if (countriesToShow.length > 1) {
-      return countriesToShow.map(country => <Country country={country} key={country.numericCode}/>)
+      const search = (event, filter) => {
+        event.preventDefault()
+        this.setState({ filter })
+      }
+      return countriesToShow.map(country =>
+        <Country country={country} searchFunction={search}/>)
     } else {
       return <CountryInfo country={countriesToShow[0]} />
     }

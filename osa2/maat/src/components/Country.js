@@ -1,8 +1,10 @@
 import React from 'react'
 
-const Country = ({ country }) => {
+const Country = ({ country, searchFunction }) => {
   return (
-    <p>{country.name}</p>
+    <p onClick={(event) => searchFunction(event, country.name)} key={country.numericCode}>
+      {country.name}
+    </p>
   )
 }
 
