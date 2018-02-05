@@ -1,8 +1,7 @@
 import React from 'react';
-import axios from 'axios'
 import Person from './components/Person'
 import Valiotsikko from './components/Valiotsikko'
-import Button from './components/Button'
+import SubmitButton from './components/SubmitButton'
 import personService from './services/persons'
 
 class App extends React.Component {
@@ -32,25 +31,51 @@ class App extends React.Component {
     }
 
     let persons = this.state.persons
+    const found = persons.find(p => p.name === personObject.name)
 
+    if (!found) {
+      personService
+        .create(personObject)
+        .then(response => {
+            this.setState({
+              persons: this.state.persons.concat(response.data),
+              newName: '',
+              newNumber: ''
+            })
+        })
+    } else {
+      personService
+        .update(found.id, personObject)
+        .then(response => {
+          console.log(response);
+          this.setState({
+            persons: this.state.persons.map(p => {
+              if (p.id === found.id) {
+                return {
+                  ...p,
+                  number: personObject.number
+                }
+              } else {
+                return p
+              }
+            }),
+            newName: '',
+            newNumber: ''
+          })
+        })
+    }
+  }
+
+
+  deletePerson = (id) => {
     personService
-    .create(personObject)
-    .then(response => {
-      if (!persons.find(p => p.name === personObject.name)) {
+      .remove(id)
+      .then(response => {
+        console.log('delete person', response);
         this.setState({
-          persons: this.state.persons.concat(response.data),
-          newName: '',
-          newNumber: ''
+          persons: this.state.persons.filter(p => p.id !== id)
         })
-      } else {
-        this.setState({
-          persons,
-          newName: '',
-          newNumber: ''
-        })
-      }
-    })
-
+      })
   }
 
   handleNameChange = (event) => {
@@ -95,14 +120,16 @@ class App extends React.Component {
               onChange={this.handleNumberChange}
             />
           </div>
-          <Button text={'lisää'} />
+          <SubmitButton text={'lisää'} />
         </form>
         <Valiotsikko text={'Numerot'} key={'Numerot'}/>
-          <ul>
+        <table>
+          <tbody>
             {personsToShow.reduce((acc, cur) => {
-              return [...acc, <Person person={cur} key={cur.name}/>]
+              return [...acc, <Person person={cur} key={cur.name} handleClick={this.deletePerson}/>]
             }, [])}
-          </ul>
+          </tbody>
+        </table>
       </div>
     )
   }

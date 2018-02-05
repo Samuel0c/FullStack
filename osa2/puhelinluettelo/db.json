@@ -2,7 +2,7 @@
   "persons": [
     {
       "name": "Arto Hellas",
-      "number": "040-123456",
+      "number": "050-5555555",
       "id": 1
     },
     {
@@ -22,23 +22,13 @@
     },
     {
       "name": "Tea",
-      "number": "99888777666",
+      "number": "040-44444444",
       "id": 5
     },
     {
-      "name": "Testaaja",
-      "number": "98765441",
+      "name": "Bea",
+      "number": "09-9898989",
       "id": 6
-    },
-    {
-      "name": "Anna Akana",
-      "number": "12349876",
-      "id": 7
-    },
-    {
-      "name": "Ulla Taalasmaa",
-      "number": "11335577",
-      "id": 8
     }
   ]
 }

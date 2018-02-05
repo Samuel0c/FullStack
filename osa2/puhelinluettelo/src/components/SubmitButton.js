@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Button = (props) => (
+const SubmitButton = (props) => (
   <div>
     <button type="submit">{props.text}</button>
   </div>
 )
 
-export default Button
+export default SubmitButton
