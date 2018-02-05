@@ -1,8 +1,21 @@
 import React from 'react';
+import './index.css'
 import Person from './components/Person'
 import Valiotsikko from './components/Valiotsikko'
 import SubmitButton from './components/SubmitButton'
 import personService from './services/persons'
+
+
+const Notification = ({ message }) => {
+  if (message === '') {
+    return null
+  }
+  return (
+    <div className="error">
+      {message}
+    </div>
+  )
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -11,16 +24,25 @@ class App extends React.Component {
       persons: [],
       newName: '',
       newNumber: '',
-      filter: ''
+      filter: '',
+      message: ''
     }
   }
 
   componentDidMount() {
     personService
-    .getAll()
-    .then(response => {
-      this.setState({persons: response.data})
-    })
+      .getAll()
+      .then(response => {
+        this.setState({persons: response.data})
+      })
+      console.log(this.state.message);
+    this.messageTimeout()
+  }
+
+  messageTimeout = () => {
+    setTimeout(() => {
+      this.setState({message: ''})
+    }, 3000)
   }
 
   addPerson = (event) => {
@@ -40,8 +62,9 @@ class App extends React.Component {
             this.setState({
               persons: this.state.persons.concat(response.data),
               newName: '',
-              newNumber: ''
-            })
+              newNumber: '',
+              message: 'Henkilö lisätty onnistuneesti'
+            }, this.messageTimeout)
         })
     } else {
       personService
@@ -60,8 +83,9 @@ class App extends React.Component {
               }
             }),
             newName: '',
-            newNumber: ''
-          })
+            newNumber: '',
+            message: 'Numero päivitetty onnistuneesti'
+          }, this.messageTimeout)
         })
     }
   }
@@ -73,8 +97,9 @@ class App extends React.Component {
       .then(response => {
         console.log('delete person', response);
         this.setState({
-          persons: this.state.persons.filter(p => p.id !== id)
-        })
+          persons: this.state.persons.filter(p => p.id !== id),
+          message: 'Henkilö poistettu onnistuneesti'
+        }, this.messageTimeout)
       })
   }
 
@@ -90,7 +115,6 @@ class App extends React.Component {
     this.setState({ filter: event.target.value })
   }
 
-
   render() {
    console.log(this.state.filter);
    const filter = this.state.filter
@@ -100,6 +124,7 @@ class App extends React.Component {
     return (
       <div>
         <h1>Puhelinluettelo</h1>
+        <Notification message={this.state.message}/>
         <form onChange={this.handleFilterChange}>
           <div>
             rajaa näytettäviä
@@ -108,18 +133,28 @@ class App extends React.Component {
         </form>
         <Valiotsikko text={'Lisää uusi'} key={'Lisää uusi'}/>
         <form onSubmit={this.addPerson}>
-          <div>
-            nimi: <input
-              value={this.state.newName}
-              onChange={this.handleNameChange}
-              />
-          </div>
-          <div>
-            numero: <input
-              value={this.state.newNumber}
-              onChange={this.handleNumberChange}
-            />
-          </div>
+          <table>
+            <tbody>
+              <tr>
+                <th>nimi: </th>
+                <th>
+                  <input
+                  value={this.state.newName}
+                  onChange={this.handleNameChange}
+                  />
+                </th>
+              </tr>
+              <tr>
+                <th>numero: </th>
+                <th>
+                  <input
+                  value={this.state.newNumber}
+                  onChange={this.handleNumberChange}
+                  />
+                </th>
+              </tr>
+            </tbody>
+          </table>
           <SubmitButton text={'lisää'} />
         </form>
         <Valiotsikko text={'Numerot'} key={'Numerot'}/>
