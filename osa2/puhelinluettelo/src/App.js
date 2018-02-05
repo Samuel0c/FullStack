@@ -87,6 +87,10 @@ class App extends React.Component {
             message: 'Numero päivitetty onnistuneesti'
           }, this.messageTimeout)
         })
+    .catch(error => {
+        alert(`Henkilö on jo valitettavasti poistettu palvelimelta`)
+        this.setState({ persons: this.state.persons.filter(p => p.id !== found.id) })
+      })
     }
   }
 
