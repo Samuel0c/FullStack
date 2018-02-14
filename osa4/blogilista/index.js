@@ -6,7 +6,6 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const middleware = require('./utils/middleware')
 const blogsRouter = require('./controllers/blogs')
-const blogModel = require('./models/blog')
 
 app.use(cors())
 app.use(bodyParser.json())
