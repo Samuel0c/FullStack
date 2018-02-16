@@ -93,5 +93,18 @@ describe('favorite blog', () => {
     const result = listHelper.favoriteBlog(blogs)
     expect(result).toEqual(blogs[2])
   })
+})
+
+describe('most active blogger', () => {
+
+  test('when list has only one blog, its author is the most active', () => {
+    const result = listHelper.mostBlogs(listWithOneBlog)
+    expect(result.author).toEqual(listWithOneBlog[0].author)
+  })
+
+  test('when list has many blogs, the most active blogger is the one with highest number of blogs', () => {
+    const result = listHelper.mostBlogs(blogs)
+    expect(result.author).toEqual('Robert C. Martin')
+  })
 
 })

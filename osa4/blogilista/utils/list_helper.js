@@ -14,8 +14,16 @@ const favoriteBlog = (list) => {
   return faveBlog
 }
 
+const mostBlogs = (list) => {
+  let authors = list.map(blog => blog.author)
+  let blogsPerBlogger = authors.reduce((b,c)=>((b[b.findIndex(d=>d.author===c)]||b[b.push({author:c,count:0})-1]).count++,b),[]);
+  let mostActiveBlogger = blogsPerBlogger.reduce((mostActive, blogger) => mostActive.blogs > blogger.blogs ? mostActive : blogger)
+  return mostActiveBlogger
+}
+
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 }
