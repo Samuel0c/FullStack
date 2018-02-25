@@ -12,6 +12,7 @@ beforeAll(async () => {
   await Promise.all(promiseArray)
 })
 
+
 test('blogs are returned as json', async () => {
 
   await api
@@ -36,6 +37,7 @@ test('a specific blog is within the returned blogs', async () => {
 test('a valid blog can be added ', async () => {
   const newBlog = {
     title: "Canonical string reduction",
+    user: (await helper.usersInDb())[0].id,
     author: "Edsger W. Dijkstra",
     url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
     likes: 12,
@@ -59,6 +61,7 @@ test('a valid blog can be added ', async () => {
 test('a blog with undefined likes has defaults zero likes ', async () => {
   const newBlog = {
     title: "First class tests",
+    user: (await helper.usersInDb())[0].id,
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
     __v: 0
@@ -80,6 +83,7 @@ test('a blog with undefined likes has defaults zero likes ', async () => {
 
 test('a blog without title cannot be added ', async () => {
   const newBlog = {
+    user: (await helper.usersInDb())[0].id,
     author: "Jiipu Ivaneva",
     url: "http://tajukankaankutoja.sarjakuvablogit.com/",
     likes: 10,
@@ -95,6 +99,7 @@ test('a blog without title cannot be added ', async () => {
 test('a blog without url cannot be added ', async () => {
   const newBlog = {
     title: "Susi sorakuopassa",
+    user: (await helper.usersInDb())[0].id,
     author: "Wolf Kankare",
     likes: 9,
     __v: 0
@@ -109,8 +114,9 @@ test('a blog without url cannot be added ', async () => {
 test('a blog can be deleted', async () => {
   const newBlog = {
     title: "Chocochili",
+    user: (await helper.usersInDb())[0].id,
     author: "Elina Innanen",
-    url:"https://chocochili.net/",
+    url: "https://chocochili.net/",
     likes: 9,
     __v: 0
   }
@@ -120,7 +126,7 @@ test('a blog can be deleted', async () => {
     .send(newBlog)
     .expect(201)
 
-  const blogsBefore = await helper.blogsInDb()  
+  const blogsBefore = await helper.blogsInDb()
 
   await api
     .delete(`/api/blogs/${addedBlog.body._id}`)
@@ -135,18 +141,22 @@ test('a blog can be deleted', async () => {
 test('a blog can be updated', async () => {
   const newBlog = {
     title: "Viimeinen muru",
+    user: (await helper.usersInDb())[0].id,
     author: "Saara",
-    url:"https://www.viimeistamuruamyoten.com/",
+    url: "https://www.viimeistamuruamyoten.com/",
     likes: 8,
     __v: 0
   }
+
+  console.log('viimeinen muru user', newBlog.user);
+
 
   const addedBlog = await api
     .post('/api/blogs')
     .send(newBlog)
     .expect(201)
 
-  const blogsBefore = await helper.blogsInDb()  
+  const blogsBefore = await helper.blogsInDb()
 
   newBlog.title = "Viimeistä murua myöten"
 

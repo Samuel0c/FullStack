@@ -1,27 +1,16 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog
+    .find({})
+    .populate('user')
+
   response.json(blogs)
 })
 
-/* blogsRouter.get('/:id', async (request, response) => {
-  try {
-    const blog = await Blog.findById(request.params.id)
-
-    if (blog) {
-      response.json(blog)
-    } else {
-      response.status(404).end()
-    }
-
-  } catch (exception) {
-    console.log(exception)
-    response.status(400).send({ error: 'malformatted id' })
-  }
-}) */
 
 blogsRouter.delete('/:id', async (request, response) => {
   try {
@@ -34,8 +23,11 @@ blogsRouter.delete('/:id', async (request, response) => {
 })
 
 blogsRouter.put('/:id', async (request, response) => {
+  const user = await User.findById(request.body.user)
+
   const object = {
     title: request.body.title,
+    user: user._id,
     author: request.body.author,
     url: request.body.url,
     likes: request.body.likes || 0
@@ -51,24 +43,29 @@ blogsRouter.put('/:id', async (request, response) => {
 })
 
 
-blogsRouter.post('/', (request, response) => {
+blogsRouter.post('/', async (request, response) => {
+  const user = await User.findById(request.body.user)
+
   const object = {
     title: request.body.title,
+    user: user._id,
     author: request.body.author,
     url: request.body.url,
     likes: request.body.likes || 0
   }
-  
+
   if (!object.title || !object.url) {
     return response.status(400).end()
   }
+
   const blog = new Blog(object)
 
-  blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
-    })
+  const savedBlog = await blog.save()
+
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
+
+  response.status(201).json(savedBlog)
 })
 
 
