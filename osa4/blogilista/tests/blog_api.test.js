@@ -27,7 +27,7 @@ test('all blogs are returned', async () => {
   expect(blogs.length).toBe(initBlogs.length)
 })
 
-test('a specific blog is within the returned notes', async () => {
+test('a specific blog is within the returned blogs', async () => {
   const blogs = await helper.blogsInDb()
 
   expect(blogs.map(t => t.title)).toContain('Go To Statement Considered Harmful')
