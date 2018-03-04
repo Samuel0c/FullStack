@@ -9,7 +9,7 @@ describe('api_blogs', () => {
         await Blog.remove({})
 
         for (const b of helper.initialBlogs) {
-            await new Blog(b).save()
+            await new Blog({ ...b, user: (await helper.usersInDb())[0].id }).save()
         }
     })
 
@@ -137,7 +137,7 @@ describe('api_blogs', () => {
         blog.author = "Kimmo"
 
         await api.put('/api/blogs/' + id)
-            .send(blog)
+            .send({ ...blog, user: blog.userId })
             .expect(200)
 
         const modified = await helper.findByTitle(blog.title)

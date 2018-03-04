@@ -53,9 +53,9 @@ describe('api_blogs', () => {
 
     test('saved blog with missing likes will default to 0', async () => {
         const blog = {
-            title: "asd224",
-            author: "asd",
-            url: "http",
+            title: "Keeps getting petter and petter",
+            author: "Niva",
+            url: "http://nniksu.sarjakuvablogit.com/",
             userId: (await helper.usersInDb())[0].id
         }
 
@@ -122,9 +122,9 @@ describe('api_blogs', () => {
 
     test('a blog can be updated', async () => {
         const blog = {
-            title: "titleVeryGood",
-            author: "oldauth123",
-            url: "http",
+            title: "Lust",
+            author: "Kim",
+            url: "http://lust.sarjakuvablogit.com/",
             likes: 0,
             userId: (await helper.usersInDb())[0].id
         }
@@ -134,7 +134,7 @@ describe('api_blogs', () => {
             .send(blog)
             .expect(201)).body._id
 
-        blog.author = "NewAuth"
+        blog.author = "Kimmo"
 
         await api.put('/api/blogs/' + id)
             .send(blog)

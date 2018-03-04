@@ -12,8 +12,9 @@ blogsRouter.get('/', async (req, res) => {
 blogsRouter.post('/', async (req, res) => {
   try {
     let id = req.body.userId
-    if (process.env.NODE_ENV === 'production') {
-      const decodedToken = jwt.verify(req.token, process.env.SECRET)
+    if (process.env.NODE_ENV === 'production'  || process.env.NODE_ENV === 'token') {
+      const token = req.get('Authorization').split(' ')[1]
+      const decodedToken = jwt.verify(token, process.env.SECRET)
 
       if (!token || !decodedToken.id)
         throw new Error('token missing or invalid')
@@ -45,7 +46,7 @@ blogsRouter.post('/', async (req, res) => {
 
 blogsRouter.delete('/:id', async (req, res) => {
   try {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'token') {
       const decodedToken = jwt.verify(req.token, process.env.SECRET)
 
       if (!token || !decodedToken.id)

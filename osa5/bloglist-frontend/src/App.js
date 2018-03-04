@@ -1,8 +1,12 @@
 import React from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import Togglable from './components/Toggable'
+import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import BlogView from './components/BlogView';
 
 class App extends React.Component {
   constructor(props) {
@@ -16,7 +20,8 @@ class App extends React.Component {
       error: null,
       username: '',
       password: '',
-      user: null
+      user: null,
+      blogView: null
     }
   }
 
@@ -32,11 +37,11 @@ class App extends React.Component {
     blogService.getAll().then(blogs =>
       this.setState({ blogs })
     )
-  
+
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      this.setState({user})
+      this.setState({ user })
       blogService.setToken(user.token)
     }
   }
@@ -62,13 +67,13 @@ class App extends React.Component {
           url: ''
         })
       })
-    
-      this.setState({
-        error: 'uusi blogi lisätty onnistuneesti',
-      })
-      setTimeout(() => {
-        this.setState({ error: null })
-      }, 5000)
+
+    this.setState({
+      error: 'uusi blogi lisätty onnistuneesti',
+    })
+    setTimeout(() => {
+      this.setState({ error: null })
+    }, 5000)
   }
 
   handleBlogChange = (event) => {
@@ -105,7 +110,7 @@ class App extends React.Component {
 
   logout = (event) => {
     event.preventDefault()
-    try{
+    try {
       blogService.setToken(null)
       window.localStorage.removeItem('loggedBlogappUser')
       this.setState({ user: null })
@@ -124,74 +129,37 @@ class App extends React.Component {
     this.setState({ [event.target.name]: event.target.value })
   }
 
+  handleBlogClick = (blog) => {
+    this.setState({ blogView: blog })
+  }
+
+  addLikes = async () => {
+    try {
+      const blog = this.state.blogView
+      const updatedBlog = {...blog, likes: blog.likes + 1}
+      this.setState({ blogView: updatedBlog })
+      await blogService.update(blog._id, updatedBlog)
+      this.setState({ blogs: this.state.blogs.map(b => b._id === updatedBlog._id ? updatedBlog : b) })
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
+
+  removeBlog = async () => {
+    try {
+      const blog = this.state.blogView
+      if(window.confirm('Delete ' + blog.title + '?')) {
+        await blogService.remove(blog._id)
+        this.setState({blogs: this.state.blogs.filter(b => b._id !== blog._id)})
+        this.setState({blogView : null})
+      }
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
+
+
   render() {
-
-    const loginForm = () => (
-      <div>
-        <h2>Login to application</h2>
-
-        <form onSubmit={this.login}>
-          <div>
-            käyttäjätunnus
-            <input
-              type="text"
-              name="username"
-              value={this.state.username}
-              onChange={this.handleLoginFieldChange}
-            />
-          </div>
-          <div>
-            salasana
-            <input
-              type="password"
-              name="password"
-              value={this.state.password}
-              onChange={this.handleLoginFieldChange}
-            />
-          </div>
-          <button>kirjaudu</button>
-        </form>
-      </div>
-    )
-
-    const newBlogForm = () => (
-      <div>
-
-        <h3>create new</h3>
-
-        <form onSubmit={this.addBlog} >
-          <div>
-            title
-            <input
-              type="text"
-              name="title"
-              value={this.state.title}
-              onChange={this.handleBlogChange}
-            />
-          </div>
-          <div>
-            author
-            <input
-              type="text"
-              name="author"
-              value={this.state.author}
-              onChange={this.handleBlogChange}
-            />
-          </div>
-          <div>
-            url
-            <input
-              type="text"
-              name="url"
-              value={this.state.url}
-              onChange={this.handleBlogChange}
-            />
-          </div>
-          <button>create</button>
-        </form>
-
-      </div>
-    )
 
     return (
       <div>
@@ -199,29 +167,36 @@ class App extends React.Component {
         <Notification message={this.state.error} />
 
         {this.state.user === null ?
-          loginForm() :
+          <LoginForm login={this.login} state={this.state} handler={this.handleLoginFieldChange} /> :
           <div>
+            {this.state.blogView !== null ?
+              <BlogView blog={this.state.blogView} onClick={() => this.handleBlogClick(null)} 
+                        addLike={this.addLikes} remove={this.removeBlog}
+                        showDelete={!this.state.blogView.user || this.state.user.username === this.state.blogView.user.username} /> :
+              <div>
+                <h2>Blogs</h2>
 
-            <h2>Blogs</h2>
+                <div >
+                  <p>{this.state.user.name} logged in<button onClick={this.logout}>logout</button></p>
+                </div>
 
-            <div >
-              <p>{this.state.user.name} logged in<button onClick={this.logout}>logout</button></p>
-            </div>
+                <div>
+                  {this.state.blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+                    <Blog key={blog._id} blog={blog} onClick={() => this.handleBlogClick(blog)} />
+                  )}
+                </div>
 
-            <div>
-              {this.state.blogs.map(blog =>
-                <Blog key={blog._id} blog={blog} />
-              )}
-            </div>
+                <div>
+                  <Togglable buttonLabel="new blog">
+                    <BlogForm state={this.state} handler={this.handleBlogChange} adder={this.addBlog} />
+                  </Togglable>
+                </div>
 
-            <div>
-              {newBlogForm()}
-            </div>
+              </div>
+            }
 
           </div>
         }
-
-
       </div>
     )
 
