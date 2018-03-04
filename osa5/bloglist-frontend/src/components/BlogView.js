@@ -2,7 +2,7 @@ import React from 'react'
 
 const BlogView = ({ blog, onClick, addLike, remove, showDelete }) => {
     return (
-        <div>
+        <div className="details">
             <p onClick={onClick}>{blog.title} {blog.author}</p>
             <p>{blog.url}</p>
             <p>{blog.likes}<button onClick={addLike}>like</button></p>
